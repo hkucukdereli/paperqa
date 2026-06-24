@@ -1,0 +1,17 @@
+# Per-exploration overrides. Anything omitted falls back to engine defaults
+# (engine/config.py DEFAULTS + engine/settings.py model strings).
+
+name: _template                          # paper-qa index name (defaults to the folder name)
+
+# Phase 1 = fast generic embedder (smoke test). After Phase 2 passes, swap to a
+# biomedical retriever and re-index with:  pqe index <name> --rebuild
+embedding: st-multi-qa-MiniLM-L6-cos-v1
+# embedding: st-pritamdeka/S-PubMedBert-MS-MARCO     # Phase 3 (asymmetric query→passage, biomedical)
+# embedding: st-NeuML/pubmedbert-base-embeddings     # Phase 3 alternative to A/B
+
+evidence_k: 12                           # chunks retrieved per question (recall vs cost)
+answer_max_sources: 8                    # sources allowed into the final answer
+
+# Advanced (optional) — uncomment if needed:
+# multimodal: 0                          # skip LLM figure/table enrichment (faster, cheaper, text-only)
+# chunk_chars: 5000                      # chunk size (the real field; NOT parsing.chunk_size). Reindex after changing.

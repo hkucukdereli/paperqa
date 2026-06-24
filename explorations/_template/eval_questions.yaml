@@ -1,0 +1,21 @@
+# Phase-2 ground truth. You cannot audit grounding without knowing the answers.
+# Rules (see docs/GROUNDING_AUDIT.md):
+#   - 4–6 questions you ALREADY know the answer to, and know which paper holds it.
+#   - EXACTLY ONE negative control: a question your library demonstrably CANNOT answer.
+#     A healthy system refuses ("insufficient evidence"); a broken one confabulates.
+#
+# expect_source matches loosely (normalized substring) against the retrieved chunks'
+# source ids — name the file or first-author/year so it's recognizable.
+
+- q: "<a question whose answer you know>"
+  expect_source: "Author_Year.pdf"      # paper that SHOULD be retrieved
+  expect: answerable
+
+- q: "<another question you know the answer to>"
+  expect_source: "Author_Year.pdf"
+  expect: answerable
+
+# ... add 2–4 more answerable questions ...
+
+- q: "<a question your library cannot answer>"
+  expect: insufficient_evidence          # MUST refuse, not confabulate (the cleanest honesty test)

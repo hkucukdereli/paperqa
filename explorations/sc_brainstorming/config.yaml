@@ -1,0 +1,16 @@
+# First exploration — sc_brainstorming. Add PDFs to ./papers/ when ready to test.
+
+name: sc_brainstorming                   # paper-qa index name
+
+# Phase 1 smoke test uses the fast generic embedder. After the Phase-2 grounding audit
+# passes, swap to a biomedical retriever and re-index:  pqe index sc_brainstorming --rebuild
+embedding: st-multi-qa-MiniLM-L6-cos-v1
+# embedding: st-pritamdeka/S-PubMedBert-MS-MARCO
+# embedding: st-NeuML/pubmedbert-base-embeddings
+
+evidence_k: 12
+answer_max_sources: 8
+
+# Advanced (optional):
+# multimodal: 0        # skip LLM figure/table enrichment (faster, cheaper, text-only)
+# chunk_chars: 5000    # chunk size (the real field; NOT parsing.chunk_size). Reindex after changing.

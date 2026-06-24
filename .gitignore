@@ -1,0 +1,21 @@
+# environment
+.venv/
+.env
+
+# python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# per-exploration data (large / private) — keep the folder, not the contents
+explorations/*/papers/*
+!explorations/*/papers/.gitkeep
+explorations/*/index/
+.pqa/
+
+# os
+.DS_Store
+
+# NOTE: explorations/*/runs/ IS tracked (small text reports — your audit trail)

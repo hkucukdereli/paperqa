@@ -1,0 +1,12 @@
+# sc_brainstorming — Phase-2 ground truth. Fill in once you've added PDFs to ./papers/.
+# 4–6 questions you KNOW the answer to (and which paper holds it) + 1 negative control.
+# See docs/GROUNDING_AUDIT.md.
+
+- q: "<a question whose answer you know>"
+  expect_source: "Author_Year.pdf"
+  expect: answerable
+
+# ... add 3–5 more answerable questions ...
+
+- q: "<a question your library cannot answer>"
+  expect: insufficient_evidence          # MUST refuse, not confabulate

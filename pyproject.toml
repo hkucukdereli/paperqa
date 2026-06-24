@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paperqa-engine"
+version = "0.1.0"
+description = "Claude-backed, OpenAI-free grounded literature retrieval over per-exploration PDF corpora (paper-qa wrapper)"
+requires-python = ">=3.11"
+dependencies = [
+    "paper-qa[local]",   # PaperQA2 + sentence-transformers (local embeddings)
+    "pyyaml",            # per-exploration config.yaml / eval_questions.yaml
+]
+
+[project.scripts]
+pqe = "engine.cli:main"
+
+[tool.setuptools]
+packages = ["engine"]

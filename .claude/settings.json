@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git mv *)",
+      "Bash(python3 -m venv .venv)",
+      "Bash(.venv/bin/python -m pip install --quiet --upgrade pip)",
+      "Bash(.venv/bin/python --version)",
+      "Bash(echo \"venv python: $\\(.venv/bin/python --version\\)\")",
+      "Bash(.venv/bin/python -m pip --version)",
+      "Bash(.venv/bin/python -c \"import paperqa, sentence_transformers, yaml, litellm; print\\('paper-qa', paperqa.__version__\\); print\\('sentence-transformers', sentence_transformers.__version__\\); print\\('litellm', litellm.__version__\\)\")",
+      "Bash(.venv/bin/python -)",
+      "Bash(.venv/bin/python -m compileall -q engine)"
+    ]
+  }
+}
