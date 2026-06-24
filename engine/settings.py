@@ -21,6 +21,33 @@ SUMMARY_LLM = "anthropic/claude-haiku-4-5"    # per-chunk summaries, called ~evi
 DEFAULT_EMBEDDING = "st-multi-qa-MiniLM-L6-cos-v1"
 
 
+def _model_config(model_name: str) -> dict:
+    """A LiteLLM model_list config that OMITS `temperature`.
+
+    claude-opus-4-8 rejects the `temperature` param (the Anthropic API returns
+    "`temperature` is deprecated for this model"), but paper-qa's default
+    `make_default_litellm_model_list_settings` hard-codes `temperature=0.0` into
+    litellm_params. litellm 1.84.x still lists temperature as "supported" for this model,
+    so `drop_params` won't help — the param must simply not be sent. This mirrors the
+    paper-qa default minus the temperature key, keeping prompt-cache injection.
+    See docs/ERRATA.md.
+    """
+    return {
+        "name": model_name,
+        "model_list": [
+            {
+                "model_name": model_name,
+                "litellm_params": {
+                    "model": model_name,
+                    "cache_control_injection_points": [
+                        {"location": "message", "role": "system"}
+                    ],
+                },
+            }
+        ],
+    }
+
+
 def make_settings(exploration_dir: Path, cfg: dict) -> Settings:
     """Build paper-qa Settings for one exploration folder.
 
@@ -54,6 +81,14 @@ def make_settings(exploration_dir: Path, cfg: dict) -> Settings:
     # OpenAI-free guarantee: paper-qa's multimodal figure enrichment defaults to gpt-4o.
     # Route it to a cheap, vision-capable Claude model so nothing ever touches OpenAI.
     s.parsing.enrichment_llm = SUMMARY_LLM
+
+    # Don't send `temperature` (deprecated for claude-opus-4-8 → Anthropic 400s on it).
+    # Explicit per-model configs that omit it; covers get_llm / get_summary_llm /
+    # get_agent_llm (used by the default ToolSelector agent) / get_enrichment_llm.
+    s.llm_config = _model_config(ANSWER_LLM)
+    s.summary_llm_config = _model_config(SUMMARY_LLM)
+    s.agent.agent_llm_config = _model_config(ANSWER_LLM)
+    s.parsing.enrichment_llm_config = _model_config(SUMMARY_LLM)
 
     # Optional advanced knobs (set in config.yaml only if you need them):
     #   multimodal: 0       -> skip LLM figure/table enrichment (faster + cheaper; text-only)

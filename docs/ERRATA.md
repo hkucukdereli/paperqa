@@ -84,6 +84,23 @@ cheap) so multimodal stays OpenAI-free. `multimodal` is on by default (=1) → e
 LLM per figure (cost/latency). Set `multimodal: 0` in an exploration's `config.yaml` for faster,
 text-only indexing.
 
+### Bug 3 — `temperature` is deprecated for claude-opus-4-8 (found on first keyed index)
+The first real `pqe index` (with a key) hit:
+`BadRequestError: AnthropicException - "temperature is deprecated for this model". Model=anthropic/claude-opus-4-8`.
+paper-qa's `make_default_litellm_model_list_settings` hard-codes `temperature=0.0` into every
+model's `litellm_params`; the Anthropic API now rejects the param for opus-4-8. litellm 1.84.1
+still lists `temperature` as **supported** for this model (`get_supported_openai_params` includes
+it), so `litellm.drop_params=True` does **not** drop it — the param must simply not be sent.
+→ Fixed in `engine/settings.py` (`_model_config`): `make_settings` sets explicit
+`llm_config` / `summary_llm_config` / `agent.agent_llm_config` / `parsing.enrichment_llm_config`
+that mirror paper-qa's default **minus** the `temperature` key (keeping prompt-cache injection).
+Verified: `temperature` is absent from every router deployment's `litellm_params`.
+Covers the default `agent_type="ToolSelector"` (its LLM goes through `get_agent_llm().get_router()`).
+Notes: (a) we omit temperature for Haiku too, for uniformity/safety — summaries use the model
+default instead of 0.0; (b) the hard-coded `llm_model={"temperature": self.temperature}` at
+settings.py:1035/1040 is only used by `ldp`-based agent types — if you ever switch `agent_type`
+away from ToolSelector, temperature handling there would need revisiting.
+
 ### Still confirm at first real run (needs the key)
 - Live `session.contexts[0]` schema (`.context`/`.score`/`.text.name`) — `engine/report.py`
   guards defensively, but eyeball it once.
